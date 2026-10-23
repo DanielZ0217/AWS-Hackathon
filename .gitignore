@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+.DS_Store
+
+# Project-level Claude Code skill (third-party content with no license file) and local settings
+.claude/skills/
+.claude/settings.local.json
