@@ -1,8 +1,6 @@
 import type { ConnectionStatus, SourceMode } from "../source/types";
 import { buttonPrimary, buttonSecondary } from "./buttonStyles";
 
-const SPEEDS = [1, 2, 4];
-
 interface CaseOption {
   id: string;
   label: string;
@@ -17,8 +15,6 @@ interface Props {
   status: ConnectionStatus;
   step: number;
   totalSteps: number; // 0 when unknown (live)
-  speed: number;
-  onSpeed: (speed: number) => void;
   onRun: () => void;
   onPause: () => void;
   onResume: () => void;
@@ -68,25 +64,6 @@ export function CaseControls(p: Props) {
           </button>
         )}
       </div>
-
-      {!live && (
-        <div role="group" aria-label="Replay speed" className="flex items-center gap-2">
-          <span className="text-sm font-bold">Speed</span>
-          {SPEEDS.map((s) => (
-            <button
-              key={s}
-              type="button"
-              aria-pressed={p.speed === s}
-              onClick={() => p.onSpeed(s)}
-              className={`rounded-sm border border-ink px-3 py-1 text-sm font-bold ${
-                p.speed === s ? "bg-ink text-paper" : "bg-surface text-ink"
-              }`}
-            >
-              {s}x
-            </button>
-          ))}
-        </div>
-      )}
 
       {p.status !== "idle" && p.status !== "error" && (
         <p className="text-sm text-ink-soft">{p.totalSteps > 0 ? `Step ${p.step} of ${p.totalSteps}` : `Step ${p.step}`}</p>

@@ -21,7 +21,6 @@ export default function App() {
   const [presets, setPresets] = useState<PresetSummary[] | null>(null);
   const [presetId, setPresetId] = useState("");
   const [scenarioId, setScenarioId] = useState(RECORDED[0].id);
-  const [speed, setSpeed] = useState(1);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [showTechnical, setShowTechnical] = useState(false);
   const detailsButton = useRef<HTMLButtonElement>(null);
@@ -44,12 +43,9 @@ export default function App() {
   const scenario = RECORDED.find((s) => s.id === scenarioId) ?? RECORDED[0];
   const preset = presets?.find((p) => p.id === presetId);
 
-  // One source per selection. Changing speed re-times the same replay instead of recreating it.
+  // One source per selection.
   const replay = useMemo(() => new ReplaySource(scenario), [scenario]);
   const live = useMemo(() => new LiveSource(presetId), [presetId]);
-  useEffect(() => {
-    replay.setSpeed(speed);
-  }, [replay, speed]);
   const source: EventSourceLike = mode === "live" ? live : replay;
 
   const { run, status } = useRunStream(source);
@@ -99,8 +95,6 @@ export default function App() {
           status={status}
           step={run.events.length}
           totalSteps={mode === "replay" ? scenario.events.length : 0}
-          speed={speed}
-          onSpeed={setSpeed}
           onRun={() => source.start()}
           onPause={() => replay.pause()}
           onResume={() => replay.resume()}
