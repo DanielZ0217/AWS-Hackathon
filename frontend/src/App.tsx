@@ -6,7 +6,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { HowWeGotThis } from "./components/HowWeGotThis";
 import { Summary } from "./components/Summary";
 import { runText } from "./labels";
-import { SCENARIOS, getScenario } from "./mock/scenarios";
+import { RECORDED } from "./recorded/recorded";
 import { fetchPresets } from "./source/api";
 import type { PresetSummary } from "./source/api";
 import { LiveSource } from "./source/liveSource";
@@ -20,7 +20,7 @@ export default function App() {
   const [mode, setMode] = useState<SourceMode>("replay");
   const [presets, setPresets] = useState<PresetSummary[] | null>(null);
   const [presetId, setPresetId] = useState("");
-  const [scenarioId, setScenarioId] = useState(SCENARIOS[0].id);
+  const [scenarioId, setScenarioId] = useState(RECORDED[0].id);
   const [speed, setSpeed] = useState(1);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [showTechnical, setShowTechnical] = useState(false);
@@ -41,7 +41,7 @@ export default function App() {
     };
   }, []);
 
-  const scenario = getScenario(scenarioId) ?? SCENARIOS[0];
+  const scenario = RECORDED.find((s) => s.id === scenarioId) ?? RECORDED[0];
   const preset = presets?.find((p) => p.id === presetId);
 
   // One source per selection. Changing speed re-times the same replay instead of recreating it.
@@ -73,7 +73,7 @@ export default function App() {
     setDetailsOpen(false);
   };
 
-  const options = mode === "live" ? (presets ?? []) : SCENARIOS;
+  const options = mode === "live" ? (presets ?? []) : RECORDED;
 
   return (
     <div className="min-h-svh bg-paper">
