@@ -62,11 +62,6 @@ export default function App() {
     detailsButton.current?.focus();
   }, []);
 
-  const changeMode = (next: SourceMode) => {
-    setMode(next);
-    setDetailsOpen(false);
-  };
-
   const selectCase = (id: string) => {
     if (mode === "live") setPresetId(id);
     else setScenarioId(id);
@@ -77,7 +72,7 @@ export default function App() {
 
   return (
     <div className="min-h-svh bg-paper">
-      <DisclaimerBanner replay={source.kind === "replay"} />
+      <DisclaimerBanner />
 
       {/* The safety stop, visible at the top of the screen. Hidden from screen readers because
           the alert in the summary already announces it. */}
@@ -97,8 +92,6 @@ export default function App() {
 
         <CaseControls
           mode={mode}
-          liveAvailable={presets !== null}
-          onModeChange={changeMode}
           scenarios={options}
           selectedId={mode === "live" ? presetId : scenarioId}
           description={mode === "live" ? (preset?.description ?? "") : scenario.description}

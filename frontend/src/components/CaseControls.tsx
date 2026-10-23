@@ -10,8 +10,6 @@ interface CaseOption {
 
 interface Props {
   mode: SourceMode;
-  liveAvailable: boolean; // false when the backend did not answer
-  onModeChange: (mode: SourceMode) => void;
   scenarios: CaseOption[];
   selectedId: string;
   description: string; // what the selected case demonstrates
@@ -42,27 +40,6 @@ export function CaseControls(p: Props) {
 
   return (
     <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
-      <div role="group" aria-label="Where the events come from">
-        <span className="block text-sm font-bold">Source</span>
-        <div className="mt-1 flex">
-          {(["live", "replay"] as const).map((m) => (
-            <button
-              key={m}
-              type="button"
-              aria-pressed={p.mode === m}
-              disabled={m === "live" && !p.liveAvailable}
-              onClick={() => p.onModeChange(m)}
-              title={m === "live" && !p.liveAvailable ? "The backend did not respond" : undefined}
-              className={`border border-ink px-3 py-2 text-sm font-bold first:rounded-l-sm last:rounded-r-sm disabled:cursor-not-allowed disabled:opacity-40 ${
-                p.mode === m ? "bg-ink text-paper" : "bg-surface text-ink"
-              }`}
-            >
-              {m === "live" ? "Live backend" : "Recorded replay"}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <div>
         <label htmlFor="case-select" className="block text-sm font-bold">
           Case
@@ -117,7 +94,7 @@ export function CaseControls(p: Props) {
 
       {p.status === "error" && (
         <p role="alert" className="basis-full font-bold">
-          Couldn&apos;t reach the backend. Check that it is running, or switch to the recorded replay.
+          Couldn&apos;t reach the backend. Check that it is running, then reload the page.
         </p>
       )}
 
