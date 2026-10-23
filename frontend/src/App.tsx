@@ -7,24 +7,50 @@ import { HowWeGotThis } from "./components/HowWeGotThis";
 import { Summary } from "./components/Summary";
 import { runText } from "./labels";
 import { SCENARIOS, getScenario } from "./mock/scenarios";
+import { fetchPresets } from "./source/api";
+import type { PresetSummary } from "./source/api";
+import { LiveSource } from "./source/liveSource";
 import { ReplaySource } from "./source/replaySource";
+import type { EventSourceLike, SourceMode } from "./source/types";
 import { useRunStream } from "./source/useRunStream";
 import { buildStripModel } from "./view/stripModel";
 import { buildSummaryModel } from "./view/summaryModel";
 
 export default function App() {
+  const [mode, setMode] = useState<SourceMode>("replay");
+  const [presets, setPresets] = useState<PresetSummary[] | null>(null);
+  const [presetId, setPresetId] = useState("");
   const [scenarioId, setScenarioId] = useState(SCENARIOS[0].id);
   const [speed, setSpeed] = useState(1);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [showTechnical, setShowTechnical] = useState(false);
   const detailsButton = useRef<HTMLButtonElement>(null);
 
-  const scenario = getScenario(scenarioId) ?? SCENARIOS[0];
-  // One source per case. Changing speed re-times the same source instead of recreating it.
-  const source = useMemo(() => new ReplaySource(scenario), [scenario]);
+  // Ask the backend for its patients once. If it answers, start on the live source; if not,
+  // stay on the recorded replay so the screen never opens broken.
   useEffect(() => {
-    source.setSpeed(speed);
-  }, [source, speed]);
+    let cancelled = false;
+    void fetchPresets().then((found) => {
+      if (cancelled || !found || found.length === 0) return;
+      setPresets(found);
+      setPresetId(found[0].id);
+      setMode("live");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const scenario = getScenario(scenarioId) ?? SCENARIOS[0];
+  const preset = presets?.find((p) => p.id === presetId);
+
+  // One source per selection. Changing speed re-times the same replay instead of recreating it.
+  const replay = useMemo(() => new ReplaySource(scenario), [scenario]);
+  const live = useMemo(() => new LiveSource(presetId), [presetId]);
+  useEffect(() => {
+    replay.setSpeed(speed);
+  }, [replay, speed]);
+  const source: EventSourceLike = mode === "live" ? live : replay;
 
   const { run, status } = useRunStream(source);
   const strip = useMemo(() => buildStripModel(run), [run]);
@@ -36,10 +62,18 @@ export default function App() {
     detailsButton.current?.focus();
   }, []);
 
-  const selectScenario = (id: string) => {
-    setScenarioId(id);
+  const changeMode = (next: SourceMode) => {
+    setMode(next);
     setDetailsOpen(false);
   };
+
+  const selectCase = (id: string) => {
+    if (mode === "live") setPresetId(id);
+    else setScenarioId(id);
+    setDetailsOpen(false);
+  };
+
+  const options = mode === "live" ? (presets ?? []) : SCENARIOS;
 
   return (
     <div className="min-h-svh bg-paper">
@@ -62,19 +96,22 @@ export default function App() {
         </header>
 
         <CaseControls
-          scenarios={SCENARIOS}
-          selectedId={scenarioId}
-          description={scenario.description}
-          onSelect={selectScenario}
+          mode={mode}
+          liveAvailable={presets !== null}
+          onModeChange={changeMode}
+          scenarios={options}
+          selectedId={mode === "live" ? presetId : scenarioId}
+          description={mode === "live" ? (preset?.description ?? "") : scenario.description}
+          onSelect={selectCase}
           status={status}
           step={run.events.length}
-          totalSteps={scenario.events.length}
+          totalSteps={mode === "replay" ? scenario.events.length : 0}
           speed={speed}
           onSpeed={setSpeed}
           onRun={() => source.start()}
-          onPause={() => source.pause()}
-          onResume={() => source.resume()}
-          onRestart={() => source.restart()}
+          onPause={() => replay.pause()}
+          onResume={() => replay.resume()}
+          onRestart={() => replay.restart()}
         />
 
         {/* Read out by screen readers when the run changes. */}

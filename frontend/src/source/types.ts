@@ -3,6 +3,9 @@
 
 export type ConnectionStatus = "idle" | "connecting" | "live" | "paused" | "ended" | "error";
 
+// Where events come from: the real backend, or a recorded scripted replay.
+export type SourceMode = "live" | "replay";
+
 export interface SourceListener {
   onMessage(raw: unknown): void; // an untyped message; the state builder validates it
   onStatus(status: ConnectionStatus): void;
