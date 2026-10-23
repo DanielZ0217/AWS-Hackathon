@@ -6,7 +6,7 @@ export function DisclaimerBanner({ replay }: { replay: boolean }) {
         {replay && (
           <p className="flex items-center gap-2 text-ink-soft">
             <span className="rounded-full border border-ink-soft px-2 text-xs font-bold">Replay</span>
-            A recording of a real run, not live.
+            Recorded run.
           </p>
         )}
       </div>
