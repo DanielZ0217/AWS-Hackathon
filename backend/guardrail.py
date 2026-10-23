@@ -43,9 +43,10 @@ class Guard:
             existing = next((g for g in client.list_guardrails().get("guardrails", []) if g["name"] == NAME), None)
             if existing:
                 self.guardrail_id = existing["id"]
-                self.version = existing.get("version") if existing.get("version", "DRAFT") != "DRAFT" else None
-                if self.version is None:
-                    self.version = client.create_guardrail_version(guardrailIdentifier=self.guardrail_id)["version"]
+                # Reuse the newest numbered version instead of creating another on every start.
+                all_versions = client.list_guardrails(guardrailIdentifier=self.guardrail_id).get("guardrails", [])
+                numbered = sorted((g["version"] for g in all_versions if str(g.get("version", "")).isdigit()), key=int)
+                self.version = numbered[-1] if numbered else client.create_guardrail_version(guardrailIdentifier=self.guardrail_id)["version"]
                 return
 
             created = client.create_guardrail(
