@@ -1,0 +1,158 @@
+{
+  "schema_version": "1.0",
+  "purpose": "Allowlisted source manifest for the planned ingestion harness; no downloads performed",
+  "default_follow_links": false,
+  "sources": [
+    {
+      "source_id": "ref-bnp",
+      "url": "https://medlineplus.gov/lab-tests/natriuretic-peptide-tests-bnp-nt-probnp/",
+      "title": "Natriuretic peptide tests",
+      "specialty": "lab",
+      "corpus_role": "reference_knowledge",
+      "format": "html",
+      "acquisition_status": "selected_not_downloaded",
+      "ingest_scope": "Main first-party article text and headings; exclude navigation, external linked pages, and third-party media",
+      "rights_review": "Verify page-specific notices before publication",
+      "checked_on": "2026-10-23",
+      "retrieval_scopes": [
+        "lab",
+        "synthesis",
+        "nutrition"
+      ]
+    },
+    {
+      "source_id": "ref-bmp",
+      "url": "https://medlineplus.gov/lab-tests/basic-metabolic-panel-bmp/",
+      "title": "Basic metabolic panel",
+      "specialty": "lab",
+      "corpus_role": "reference_knowledge",
+      "format": "html",
+      "acquisition_status": "selected_not_downloaded",
+      "ingest_scope": "Main first-party article text and headings; exclude navigation, external linked pages, and third-party media",
+      "rights_review": "Verify page-specific notices before publication",
+      "checked_on": "2026-10-23",
+      "retrieval_scopes": [
+        "lab",
+        "synthesis",
+        "nutrition"
+      ]
+    },
+    {
+      "source_id": "ref-potassium",
+      "url": "https://medlineplus.gov/lab-tests/potassium-blood-test/",
+      "title": "Potassium blood test",
+      "specialty": "lab",
+      "corpus_role": "reference_knowledge",
+      "format": "html",
+      "acquisition_status": "selected_not_downloaded",
+      "ingest_scope": "Main first-party article text and headings; exclude navigation, external linked pages, and third-party media",
+      "rights_review": "Verify page-specific notices before publication",
+      "checked_on": "2026-10-23",
+      "retrieval_scopes": [
+        "lab",
+        "synthesis",
+        "nutrition"
+      ]
+    },
+    {
+      "source_id": "ref-ecg",
+      "url": "https://medlineplus.gov/lab-tests/electrocardiogram/",
+      "title": "Electrocardiogram",
+      "specialty": "ecg",
+      "corpus_role": "reference_knowledge",
+      "format": "html",
+      "acquisition_status": "selected_not_downloaded",
+      "ingest_scope": "Main first-party article text and headings; exclude navigation, external linked pages, and third-party media",
+      "rights_review": "Verify page-specific notices before publication",
+      "checked_on": "2026-10-23",
+      "retrieval_scopes": [
+        "ecg",
+        "synthesis",
+        "physio"
+      ]
+    },
+    {
+      "source_id": "ref-hf-diagnosis",
+      "url": "https://www.nhlbi.nih.gov/health/heart-failure/diagnosis",
+      "title": "Heart failure diagnosis",
+      "specialty": "synthesis",
+      "corpus_role": "reference_knowledge",
+      "format": "html",
+      "acquisition_status": "selected_not_downloaded",
+      "ingest_scope": "Main first-party article text and headings; exclude navigation, external linked pages, and third-party media",
+      "rights_review": "Verify page-specific notices before publication",
+      "checked_on": "2026-10-23",
+      "retrieval_scopes": [
+        "synthesis",
+        "radiology",
+        "lab",
+        "ecg",
+        "nutrition",
+        "physio"
+      ]
+    },
+    {
+      "source_id": "ref-hf-symptoms",
+      "url": "https://www.nhlbi.nih.gov/health/heart-failure/symptoms",
+      "title": "Heart failure symptoms",
+      "specialty": "synthesis",
+      "corpus_role": "reference_knowledge",
+      "format": "html",
+      "acquisition_status": "selected_not_downloaded",
+      "ingest_scope": "Main first-party article text and headings; exclude navigation, external linked pages, and third-party media",
+      "rights_review": "Verify page-specific notices before publication",
+      "checked_on": "2026-10-23",
+      "retrieval_scopes": [
+        "synthesis",
+        "physio"
+      ]
+    },
+    {
+      "source_id": "ref-hf-living",
+      "url": "https://www.nhlbi.nih.gov/health/heart-failure/living-with",
+      "title": "Living with heart failure",
+      "specialty": "synthesis",
+      "corpus_role": "reference_knowledge",
+      "format": "html",
+      "acquisition_status": "selected_not_downloaded",
+      "ingest_scope": "Main first-party article text and headings; exclude navigation, external linked pages, and third-party media",
+      "rights_review": "Verify page-specific notices before publication",
+      "checked_on": "2026-10-23",
+      "retrieval_scopes": [
+        "synthesis",
+        "nutrition",
+        "physio"
+      ]
+    },
+    {
+      "source_id": "ref-foods",
+      "url": "https://www.nhlbi.nih.gov/health/heart-healthy-living/healthy-foods",
+      "title": "Heart-healthy foods",
+      "specialty": "nutrition",
+      "corpus_role": "reference_knowledge",
+      "format": "html",
+      "acquisition_status": "selected_not_downloaded",
+      "ingest_scope": "Main first-party article text and headings; exclude navigation, external linked pages, and third-party media",
+      "rights_review": "Verify page-specific notices before publication",
+      "checked_on": "2026-10-23",
+      "retrieval_scopes": [
+        "nutrition"
+      ]
+    },
+    {
+      "source_id": "ref-activity",
+      "url": "https://www.nhlbi.nih.gov/health/heart-healthy-living/physical-activity",
+      "title": "Physical activity",
+      "specialty": "physio",
+      "corpus_role": "reference_knowledge",
+      "format": "html",
+      "acquisition_status": "selected_not_downloaded",
+      "ingest_scope": "Main first-party article text and headings; exclude navigation, external linked pages, and third-party media",
+      "rights_review": "Verify page-specific notices before publication",
+      "checked_on": "2026-10-23",
+      "retrieval_scopes": [
+        "physio"
+      ]
+    }
+  ]
+}
