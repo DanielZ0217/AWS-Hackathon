@@ -9,21 +9,23 @@ import asyncio
 from dataclasses import dataclass, field
 from typing import Any
 
-from core.safety import check as safety_check
-
 from . import specialists
+from .cases import Case
 from .events import RunLog
 from .guardrail import Guard
 
 DOCTOR = "doctor_synthesis"
 
 WORKERS = {
-    "lab": {"task": "task-lab", "need": "need-1", "label": "Lab results", "question": "What do the lab results show?"},
-    "radiology": {"task": "task-radiology", "need": "need-2", "label": "Chest image", "question": "What does the chest imaging show?"},
-    "ecg": {"task": "task-ecg", "need": "need-3", "label": "Heart rhythm", "question": "What do the heart rhythm and vital signs show?"},
+    "radiology": {"task": "task-radiology", "need": "need-1", "label": "Chest image", "question": "What does the chest X-ray show?"},
+    "ecg": {"task": "task-ecg", "need": "need-2", "label": "Heart rhythm", "question": "What does the heart tracing (ECG) show?"},
 }
-ALL_NEEDS = ["need-1", "need-2", "need-3", "need-4"]
+ALL_NEEDS = ["need-1", "need-2", "need-3"]
 PROTOTYPE_LIMIT = "Prototype output. Not clinical clearance."
+PROVENANCE_LIMIT = (
+    "This virtual patient combines an ECG and a chest X-ray from two different real people. "
+    "The ECG report was written by a machine and not confirmed by a cardiologist."
+)
 
 
 @dataclass
@@ -44,10 +46,10 @@ def _worker_fields(worker: str) -> dict[str, Any]:
     return {"node": worker, "task_id": meta["task"], "need_ids": [meta["need"]]}
 
 
-async def run_pipeline(log: RunLog, preset: dict[str, Any], mode: str, guard: Guard) -> None:
+async def run_pipeline(log: RunLog, case: Case, mode: str, guard: Guard) -> None:
     """Never raises. Always ends the log with exactly one terminal event."""
     try:
-        await _run(log, preset, mode, guard)
+        await _run(log, case, mode, guard)
     except Exception as exc:  # noqa: BLE001 - nothing may crash the demo
         if not log.done:
             await log.emit(
@@ -56,22 +58,28 @@ async def run_pipeline(log: RunLog, preset: dict[str, Any], mode: str, guard: Gu
                 visibility="patient",
                 payload={
                     "outcome": "failed",
-                    "limitations": ["The review could not be completed. A clinician should look at the results directly."],
+                    "limitations": ["The review could not be completed. A clinician should look at the results directly.", PROVENANCE_LIMIT],
                     "error_category": type(exc).__name__,
                 },
             )
 
 
-async def _run(log: RunLog, preset: dict[str, Any], mode: str, guard: Guard) -> None:
-    await log.emit("run.started", "Run started for synthetic demo patient", visibility="patient", payload={"preset_id": preset["id"]})
+async def _run(log: RunLog, case: Case, mode: str, guard: Guard) -> None:
+    patient, visit = case.patient, case.visit
+    await log.emit(
+        "run.started",
+        f"Run started for virtual patient {patient.patient_id}, visit {visit.index + 1}",
+        visibility="patient",
+        payload={"preset_id": case.id, "patient_id": patient.patient_id, "visit": visit.index + 1, "day": visit.day},
+    )
     await log.emit("intake.started", "Organizing the request")
     await log.emit(
         "intake.decomposed",
-        "Organized request into 4 questions",
+        "Organized request into 3 questions",
         need_ids=ALL_NEEDS,
         payload={
             "needs": [{"need_id": m["need"], "question": m["question"]} for m in WORKERS.values()]
-            + [{"need_id": "need-4", "question": "Explain the combined picture in plain language."}]
+            + [{"need_id": "need-3", "question": "Explain the combined picture in plain language."}]
         },
     )
 
@@ -96,7 +104,7 @@ async def _run(log: RunLog, preset: dict[str, Any], mode: str, guard: Guard) -> 
         )
 
     shared = _Shared()
-    outcomes = await asyncio.gather(*(_run_worker(log, w, preset, mode, shared) for w in WORKERS))
+    outcomes = await asyncio.gather(*(_run_worker(log, w, case, mode, shared) for w in WORKERS))
 
     failed = [o.worker for o in outcomes if not o.ok]
     flags = [f for o in outcomes for f in o.flags]
@@ -118,13 +126,22 @@ async def _run(log: RunLog, preset: dict[str, Any], mode: str, guard: Guard) -> 
                 "outcome": "needs_human_review",
                 "resumable": False,
                 "flag_ids": [f["flag_id"] for f in flags],
-                "limitations": ["No guidance was produced because a critical value needs review."],
+                "limitations": ["No guidance was produced because a critical finding needs review.", PROVENANCE_LIMIT],
             },
         )
         return
 
     good = {o.worker: o.output for o in outcomes if o.ok and o.output}
-    doctor = await specialists.run_doctor(good, failed, mode)
+    earlier = [
+        {
+            "day": v.day,
+            "heart_rate_bpm": v.ecg.get("hr_bpm"),
+            "ecg_machine_report": v.ecg.get("machine_report"),
+            "xray_reference_labels": v.xray.get("labels", []),
+        }
+        for v in patient.visits[: visit.index]
+    ]
+    doctor = await specialists.run_doctor(good, failed, earlier, mode)
     out: specialists.DoctorOutput = doctor.output
     decision = "clarify" if failed else out.decision
     await log.emit(
@@ -153,11 +170,9 @@ async def _run(log: RunLog, preset: dict[str, Any], mode: str, guard: Guard) -> 
     )
 
     await log.emit("answer.started", "Preparing your summary", visibility="patient")
-    shown = 0
     for index, (section, result) in enumerate(zip(out.sections, checked), start=1):
         if result.action == "withheld":
             continue
-        shown += 1
         await log.emit(
             "answer.section",
             f"Section ready: {section.title}",
@@ -167,7 +182,7 @@ async def _run(log: RunLog, preset: dict[str, Any], mode: str, guard: Guard) -> 
         )
     await log.emit("answer.completed", "Summary ready", visibility="patient")
 
-    limitations = [PROTOTYPE_LIMIT]
+    limitations = [PROTOTYPE_LIMIT, PROVENANCE_LIMIT]
     limitations += [f"{WORKERS[w]['label']} could not be reviewed." for w in failed]
     if withheld:
         limitations.append(f"{withheld} section(s) were withheld by the safety filter.")
@@ -180,12 +195,12 @@ async def _run(log: RunLog, preset: dict[str, Any], mode: str, guard: Guard) -> 
         await log.emit("run.completed", "Run completed with stated limitations", visibility="patient", payload={"outcome": "completed", "limitations": limitations})
 
 
-async def _run_worker(log: RunLog, worker: str, preset: dict[str, Any], mode: str, shared: _Shared) -> Outcome:
+async def _run_worker(log: RunLog, worker: str, case: Case, mode: str, shared: _Shared) -> Outcome:
     meta = WORKERS[worker]
     common = {**_worker_fields(worker), "source_worker": worker, "destination_worker": DOCTOR}
     try:
-        spec = specialists.build_input(worker, preset)
-        gate = safety_check(spec.observations, required=spec.required)  # plain code, not a prompt
+        # Reading files and drawing the ECG are blocking, so they run in a thread.
+        spec = await asyncio.to_thread(specialists.build_input, worker, case, mode != "mock")
         result = await specialists.run_specialist(spec, mode)
     except specialists.MissingInput as exc:
         await log.emit(
@@ -219,9 +234,9 @@ async def _run_worker(log: RunLog, worker: str, preset: dict[str, Any], mode: st
             "supporting_observation_ids": [f"obs-{worker}-{f['field']}"],
             "requires_human_review": True,
         }
-        for f in gate.flags
+        for f in spec.flags
     ]
-    limitations = output.limitations + [f"Missing value: {g['field']} ({g['reason']})" for g in gate.gaps]
+    limitations = output.limitations + [f"Missing value: {g['field']} ({g['reason']})" for g in spec.gaps]
     await log.emit(
         "worker.completed",
         f'{meta["label"]}: {output.summary}',

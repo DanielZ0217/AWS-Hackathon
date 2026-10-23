@@ -1,0 +1,83 @@
+{
+  "patient_id": "VP01",
+  "age": 48,
+  "sex": "F",
+  "dataset_trend": "improving",
+  "provenance": "Composite virtual patient: ECGs from one real MIMIC-IV-ECG patient, X-rays from one different real NIH ChestX-ray14 patient (age/sex shown are the X-ray patient's). Paired by rule-based severity tier and trend; not clinically validated.",
+  "visits": [
+    {
+      "index": 0,
+      "day": 0,
+      "ecg_record": "t0_day0/47212598",
+      "xray_file": "t0_day0/00004344_037.png",
+      "ecg": {
+        "machine_report": "Sinus arrhythmia | Right axis deviation | Right bundle branch block | Inferior infarct - age undetermined | Lateral ST-T changes suggest myocardial injury/ischemia | Abnormal ECG",
+        "hr_bpm": 85.0,
+        "pr_ms": 160.0,
+        "qrs_ms": 140.0,
+        "qt_ms": 422.0,
+        "qrs_axis": 124
+      },
+      "xray": {
+        "labels": [
+          "Cardiomegaly",
+          "Edema"
+        ],
+        "view": "AP"
+      },
+      "dataset_tiers": {
+        "ecg": 3,
+        "xray": 3
+      }
+    },
+    {
+      "index": 1,
+      "day": 2,
+      "ecg_record": "t1_day2/40539328",
+      "xray_file": "t1_day2/00004344_038.png",
+      "ecg": {
+        "machine_report": "Sinus rhythm. | Right axis deviation | Right bundle branch block | Inferior infarct - age undetermined | Abnormal ECG",
+        "hr_bpm": 81.0,
+        "pr_ms": 162.0,
+        "qrs_ms": 138.0,
+        "qt_ms": 422.0,
+        "qrs_axis": 167
+      },
+      "xray": {
+        "labels": [
+          "Cardiomegaly"
+        ],
+        "view": "AP"
+      },
+      "dataset_tiers": {
+        "ecg": 1,
+        "xray": 1
+      }
+    },
+    {
+      "index": 2,
+      "day": 3,
+      "ecg_record": "t2_day3/46066519",
+      "xray_file": "t2_day3/00004344_039.png",
+      "ecg": {
+        "machine_report": "Sinus rhythm | Right axis deviation | Right bundle branch block | Inferior/lateral ST-T changes are nonspecific | Abnormal ECG",
+        "hr_bpm": 74.0,
+        "pr_ms": 164.0,
+        "qrs_ms": 134.0,
+        "qt_ms": 436.0,
+        "qrs_axis": 129
+      },
+      "xray": {
+        "labels": [
+          "Cardiomegaly",
+          "Infiltration"
+        ],
+        "view": "AP"
+      },
+      "dataset_tiers": {
+        "ecg": 1,
+        "xray": 1
+      }
+    }
+  ]
+}

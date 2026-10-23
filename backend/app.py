@@ -1,10 +1,11 @@
 """HTTP API. Run from the repo root:  .venv/bin/python -m uvicorn backend.app:app --port 8000
 
-  GET  /api/health                 mode and guardrail status
-  GET  /api/presets                the synthetic patients
+  GET  /api/health                 mode, data source, and guardrail status
+  GET  /api/presets                the visits of the demo patient
   POST /api/runs {"preset_id"}     start a run, returns {"run_id"}
   GET  /api/runs/{id}/events       Server-Sent Events; supports reconnecting via Last-Event-ID
-BACKEND_MODE=mock skips Bedrock entirely (offline demo).
+BACKEND_MODE=mock skips Bedrock entirely (offline). DATA_SOURCE=s3 reads the patient from S3.
+The demo patient is hardcoded (DEMO_PATIENT, default VP01) and bundled with the repo.
 """
 from __future__ import annotations
 
@@ -19,12 +20,27 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+from .cases import Case, build_cases, preset_summaries
 from .events import RunLog
-from .fixtures import PRESETS, preset_summaries
 from .guardrail import Guard
 from .pipeline import run_pipeline
+from .store import DEMO_PATIENT, FileStore, LocalStore, Patient, get_store, load_patient
 
 MODE = os.environ.get("BACKEND_MODE", "bedrock")  # "bedrock" or "mock"
+
+
+def _load() -> tuple[FileStore, Patient, str | None]:
+    """Load the demo patient. If S3 is requested but fails, fall back to the bundled copy."""
+    store = get_store()
+    try:
+        return store, load_patient(store, DEMO_PATIENT), None
+    except Exception as exc:  # noqa: BLE001 - the demo must not depend on the network
+        local = LocalStore()
+        return local, load_patient(local, DEMO_PATIENT), f"{store.name} unavailable ({type(exc).__name__}); using the bundled copy"
+
+
+STORE, PATIENT, DATA_NOTE = _load()
+CASES: dict[str, Case] = build_cases(STORE, PATIENT)
 guard = Guard(enabled=MODE == "bedrock")
 RUNS: dict[str, RunLog] = {}
 _TASKS: set[asyncio.Task] = set()  # keeps background tasks alive until they finish
@@ -48,23 +64,29 @@ class RunRequest(BaseModel):
 
 @app.get("/api/health")
 async def health() -> dict:
-    return {"mode": MODE, "guardrail": {"ready": guard.ready, "id": guard.guardrail_id, "error": guard.error}}
+    return {
+        "mode": MODE,
+        "patient": PATIENT.patient_id,
+        "data_source": STORE.name,
+        "data_note": DATA_NOTE,
+        "guardrail": {"ready": guard.ready, "id": guard.guardrail_id, "error": guard.error},
+    }
 
 
 @app.get("/api/presets")
 async def presets() -> list[dict]:
-    return preset_summaries()
+    return preset_summaries(CASES)
 
 
 @app.post("/api/runs")
 async def start_run(body: RunRequest) -> dict:
-    preset = PRESETS.get(body.preset_id)
-    if preset is None:
+    case = CASES.get(body.preset_id)
+    if case is None:
         raise HTTPException(status_code=404, detail=f"unknown preset {body.preset_id!r}")
     run_id = f"run-{uuid.uuid4().hex[:8]}"
-    log = RunLog(run_id, preset["id"])
+    log = RunLog(run_id, case.id)
     RUNS[run_id] = log
-    task = asyncio.create_task(run_pipeline(log, preset, MODE, guard))
+    task = asyncio.create_task(run_pipeline(log, case, MODE, guard))
     _TASKS.add(task)
     task.add_done_callback(_TASKS.discard)
     return {"run_id": run_id}
