@@ -1,8 +1,12 @@
 # Layer 00 — Ingestion and knowledge preparation
 
-**Status:** Architecture adopted, 2026-10-23. Source selection researched; acquisition and executable ingestion adapters remain to be implemented in the harness.  
+> **Live demo implementation (2026-10-23):** One Bedrock Knowledge Base backed by one Neptune Analytics graph now provides managed vector RAG and GraphRAG; the standalone OpenSearch and Neptune Database CSV path below is a longer-term design, not the deployed demo. Eleven authored reference summaries were indexed. See [the managed runbook](../ingestion/managed-neptune-graphrag.md) for resource IDs, S3 boundaries, verification, and limitations. The generated graph is not a clinician-reviewed causal ontology.
+
+**Status:** Architecture adopted, 2026-10-23. An [offline ingestion harness](../ingestion/README.md) also implements reviewed-section staging, parent/child records, configurable Bedrock LLM relationship extraction, Titan embeddings and reviewed OpenSearch/Neptune exports. Acquisition, automatic HTML/PDF/OCR normalization and ontology import still require implementation or operator steps.
 **Source manifest:** [00-ingestion-sources.json](00-ingestion-sources.json).  
 **Consumers:** Layer 1 receives registered patient artifacts; Layer 3 receives versioned reference passages, embeddings, graph relationships, and provenance.
+
+**Implementation and resource map:** [Ingestion folder](../ingestion/README.md), [dataset destinations and specialist coverage](../ingestion/resources.md), [step-by-step pipeline](../ingestion/pipeline.md). The executable baseline consumes manually reviewed section JSON, uses word-based child windows and immutable file journals, and exports Neptune property-graph CSV for controlled initial bulk loading. The broader automatic parsing, token-aware chunking, SQLite journal and openCypher-write adapters below remain architecture targets. Bulk CSV and openCypher use the same Neptune Database property graph.
 
 ## What this pipeline prepares
 
@@ -216,7 +220,7 @@ This custom Neptune Database loader is distinct from managed Bedrock Knowledge B
 | Whiteboard component | Our implementation |
 | --- | --- |
 | Document intelligence / tables / OCR | HTML/JSON parsing first; Amazon Textract for scanned reports/tables |
-| Images and charts / VLM | Original S3 assets plus optional reviewed Sonnet descriptions or specialist adapters |
+| Images and charts / VLM | Original S3 assets plus optional reviewed Amazon Nova Pro specialist descriptions |
 | Text embeddings | Titan Text Embeddings V2 through Bedrock |
 | Entity and relationship extraction | GPT-6 Sol structured proposals; configured Sonnet fallback; terminology mapping, code validation and graph review |
 | Keyword database + vector database | One OpenSearch index with text and vector fields |
@@ -275,7 +279,7 @@ Before publication verify:
 - A valid image-only lab fixture routes successfully, while unknown modality and red-flag fixtures exercise their intended paths.
 - The demo clearly labels synthetic data, report explanation, and any mock analysis.
 
-The current deliverables are this specification and an allowlisted nine-source manifest. Full datasets, selected case images, patient fixtures, AWS indexes, and executable ingestion code have not been downloaded, generated, or deployed yet.
+Current deliverables include this specification, the allowlisted nine-source manifest, and the [offline ingestion implementation and tests](../ingestion/README.md). Full datasets, selected case images, reviewed patient fixtures and AWS indexes/graphs have not been acquired or deployed. Tests use fictitious strings and mock Bedrock clients; they do not establish clinical extraction quality or live AWS compatibility.
 
 ## State schema after Layer 00
 

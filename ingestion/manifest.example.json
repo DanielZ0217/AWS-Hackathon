@@ -1,0 +1,21 @@
+{
+  "resources": [
+    {
+      "resource_id": "ref-bnp",
+      "role": "reference_knowledge",
+      "source_url": "https://medlineplus.gov/lab-tests/natriuretic-peptide-tests-bnp-nt-probnp/",
+      "source_version": "replace-with-acquisition-date-or-release",
+      "title": "Natriuretic peptide tests",
+      "path": "normalized/ref-bnp.json",
+      "raw_path": "raw/ref-bnp.html",
+      "license_reference": "replace-with-reviewed-page-specific-rights-record",
+      "review": {
+        "rights_approved": false,
+        "content_approved": false,
+        "reviewer": "",
+        "reviewed_at": ""
+      },
+      "retrieval_scopes": ["lab", "synthesis", "nutrition"]
+    }
+  ]
+}

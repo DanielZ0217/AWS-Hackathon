@@ -41,17 +41,15 @@ Use shared retrieval services across workers. Do not create independent knowledg
 
 | Worker | Initial evidence support | Analysis approach | Retrieval purpose |
 | --- | --- | --- | --- |
-| lab | Patient text and PNG/JPEG lab reports | Extract names, values, units, and supplied reference intervals; code performs interval comparisons; Sonnet structures interpretation | Explain observed abnormalities and supported condition associations |
-| radiology | Selected PNG/JPEG radiology examples | Evaluate MedGemma 1.5 4B as an image-analysis adapter; Sonnet may normalize its output when needed | Explain image findings and associated conditions |
-| ecg | ECG report text or annotated PNG/JPEG examples | Extract supplied measurements and reported interpretations; Sonnet structures explanation | Explain reported features and relevant associations |
-| nutrition | Reviewed combined findings and relevant patient context | Sonnet with constrained evidence context | Retrieve requested nutrition guidance |
-| physio | Reviewed combined findings and functional context | Sonnet with constrained evidence context | Retrieve requested movement guidance and limitations |
+| lab | Patient text and PNG/JPEG lab reports | Amazon Nova Pro extracts names, values, units, supplied reference intervals and structured observations; code performs interval comparisons | Explain observed abnormalities and supported condition associations |
+| radiology | Selected PNG/JPEG radiology examples or supplied reports | Amazon Nova Pro handles the bounded image/report explanation and emits the shared evidence contract | Explain image or report findings and associated conditions |
+| ecg | ECG report text or annotated PNG/JPEG examples | Amazon Nova Pro extracts supplied measurements and reported interpretations into the shared evidence contract | Explain reported features and relevant associations |
+| nutrition | Reviewed combined findings and relevant patient context | Amazon Nova Pro with constrained nutrition evidence context | Retrieve requested nutrition guidance |
+| physio | Reviewed combined findings and functional context | Amazon Nova Pro with constrained activity evidence context | Retrieve requested movement guidance and limitations |
 
-MedGemma is a candidate, not a verified deployment. Before using it, confirm hosting, license, supported inputs, latency, and performance on the selected examples. If unavailable, use supplied source reports or clearly labeled fixtures; never present them as independent image interpretation.
+Amazon Nova Pro is the configured main model for every runtime specialist. There are no Hugging Face specialist checkpoints or separate hosted specialist-model dependencies. Preserve original artifact and model-output references so structured normalization cannot silently replace source findings.
 
-ECG image explanation is not raw waveform analysis. ECG-FM is a later candidate for a waveform adapter with explicit lead, sampling, preprocessing, and task requirements. Arbitrary ECG image interpretation remains unverified until evaluated.
-
-Sonnet 4.6 is the initial configurable interpretation model. Use a separate normalization call only if the specialist adapter cannot emit the shared contract. Preserve original tool output references so normalization cannot silently replace source findings.
+Nova image input does not by itself establish clinical capability. Radiology-image explanations remain prototype outputs requiring task-specific evaluation. ECG image explanation is not raw waveform analysis; raw waveform diagnosis remains out of scope until a separately validated AWS-native adapter exists.
 
 Nutrition and physio use the same evidence contract but execute after Doctor review, under Layer 2's existing dependencies and review gate.
 
@@ -112,17 +110,18 @@ The first AWS-backed harness uses Bedrock for generation, embeddings, and rerank
 
 | Resource | Selected model | Role and invocation |
 | --- | --- | --- |
-| Interpretation LLM | Claude Sonnet 4.6 | Specialist text interpretation, query construction, and bounded recovery prompts through Bedrock Runtime; reuse the configured inference profile from Layers 1–2 |
+| Specialist LLM | Amazon Nova Pro, `us.amazon.nova-pro-v1:0` | Main model for lab, radiology, ECG, nutrition and physio workers through Bedrock Runtime; supports the text and image inputs used by the prototype |
+| Planning/review LLM | Claude Sonnet 4.6 | Retrieval-query construction, evidence evaluation and bounded recovery; reuse the configured inference profile from Layers 1–2 |
 | Text embedding model | Amazon Titan Text Embeddings V2, `amazon.titan-embed-text-v2:0` | Embed reference child text during ingestion and queries at retrieval time through Bedrock Runtime |
 | Reranking model | Cohere Rerank 3.5, `cohere.rerank-v3-5:0` | Call the Bedrock Agent Runtime `Rerank` API on the merged passage and source-backed graph-path candidates |
 
-Keep Sonnet's actual model/inference-profile ID in configuration and verify that it is accessible in the selected account and Region. Do not assume five personas require five different hosted LLMs.
+Keep Nova's and Sonnet's actual inference-profile IDs in configuration and verify that they are accessible in the selected account and Region. The five specialists share Nova Pro but retain separate role settings so they can be evaluated independently.
 
 Titan generates text embeddings; it does not interpret X-rays or ECG waveforms. Configure one embedding dimension consistently for ingestion, queries, and the OpenSearch vector field. Changing the embedding model or dimension requires a versioned reindex. [Titan V2 documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html)
 
 Cohere Rerank 3.5 is the chosen reranker, separate from RRF. Current documented Regions include us-east-1 and us-west-2; confirm permissions and quotas in the hackathon account. Pass candidate text to `Rerank` and map returned indexes back to stable evidence IDs. This direct API path can rank graph and passage candidates together without creating a Bedrock Knowledge Base. [Model and Region support](https://docs.aws.amazon.com/bedrock/latest/userguide/rerank-supported.html), [Bedrock reranking API overview](https://docs.aws.amazon.com/bedrock/latest/userguide/rerank.html)
 
-MedGemma 1.5 4B and ECG-FM remain separate specialist candidates, not assumed native Bedrock model endpoints. If selected, they require a tested local or hosted inference adapter and appropriate compute. A SageMaker endpoint is an optional hosting implementation, not a baseline requirement. The supplied-report fallback must remain visibly attributed.
+No external or Hugging Face specialist model is part of the selected architecture. The supplied-report fallback remains visibly attributed, and unsupported raw-waveform or diagnostic-image claims are withheld rather than delegated to an unvalidated model.
 
 ### Search, graph, storage, and state
 
@@ -350,8 +349,7 @@ Missing patient facts require clarification or explicit limitations; retrieval c
 
 ## References
 
-- [MedGemma model card](https://huggingface.co/google/medgemma-1.5-4b-it)
-- [ECG-FM repository](https://github.com/bowang-lab/ECG-FM)
+- [Amazon Nova Pro model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html)
 - [Bedrock GraphRAG with Neptune Analytics](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-build-graphs-build.html)
 - [Bedrock reranking](https://docs.aws.amazon.com/bedrock/latest/userguide/rerank.html)
 - [Bedrock reranking model and Region support](https://docs.aws.amazon.com/bedrock/latest/userguide/rerank-supported.html)

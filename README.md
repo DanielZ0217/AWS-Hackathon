@@ -7,6 +7,10 @@ Design a coordinated set of healthcare personas that turns multiple kinds of pat
 
 ## Background
 
+Cloud setup: [Bedrock configuration and connection checks](cloud/README.md). The local `.env` holds model settings and is excluded from Git; share `.env.example` with teammates.
+
+Live ingestion demo: [Bedrock + Neptune Analytics GraphRAG runbook](ingestion/managed-neptune-graphrag.md). It uses one Knowledge Base for both vector and graph retrieval, with reference documents isolated from the fictional patient case; no standalone OpenSearch deployment is used.
+
 ### One patient, many signals
 
 Healthcare guidance often depends on connecting structured results, medical images, time-series data, and everyday behavior. This prototype demonstrates how specialized agents can collaborate while keeping the final experience understandable, transparent, and useful.
@@ -95,6 +99,8 @@ The final screen should answer:
 - **Avoid unsupported certainty.** Clearly distinguish measured facts, model interpretations, possible explanations, and clinician-confirmed conclusions.
 
 ## Data Sources to Explore
+
+See the [ingestion folder](ingestion/README.md) for the selected dataset-to-storage map and executable preparation pipeline, including LLM relationship extraction, evidence review and OpenSearch/Neptune exports. The [runbook](ingestion/pipeline.md) separates reference knowledge from patient artifacts, evaluation labels and model weights.
 
 Begin with de-identified or synthetic data. Review every dataset's license, usage restrictions, and access requirements before including it in the prototype.
 

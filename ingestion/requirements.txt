@@ -1,0 +1,2 @@
+# Shared AWS SDK and .env loader. Offline staging/tests still use stdlib.
+-r ../requirements.txt

@@ -1,0 +1,109 @@
+/* Fonts are bundled from npm packages (self-hosted): no network request at demo time. */
+@import "@fontsource/atkinson-hyperlegible/400.css";
+@import "@fontsource/atkinson-hyperlegible/700.css";
+@import "@fontsource/literata/400.css";
+@import "@fontsource/literata/400-italic.css";
+@import "@fontsource/literata/600.css";
+@import "tailwindcss";
+
+/* Design tokens. Names come from the clinical setting: chart paper, ink, the lavender-cap
+   blood tube, radiographic film, the green ECG monitor, and the single alarm red. */
+@theme {
+  --color-paper: #f7f9fa;
+  --color-surface: #ffffff;
+  --color-grid: #ebcfd0; /* ECG-paper minor line */
+  --color-grid-major: #dcb2b5; /* every fifth line */
+  --color-ink: #162a3d;
+  --color-ink-soft: #4a5a68;
+  --color-line: #d5dce1;
+  --color-alarm: #d6283a; /* red flags only: nothing else on screen is red */
+  --color-lab: #6b5ca5;
+  --color-radiology: #35688c;
+  --color-ecg: #2f7d4f;
+
+  --font-sans: "Atkinson Hyperlegible", system-ui, sans-serif;
+  --font-serif: "Literata", Georgia, serif;
+
+  /* Type scale, ratio 1.25 */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5625rem;
+  --text-2xl: 1.9375rem;
+}
+
+:root {
+  color-scheme: light;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-ink);
+  background: var(--color-paper);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+}
+
+#root {
+  min-height: 100svh;
+}
+
+/* Keyboard focus is always visible. */
+:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+/* The only motion in the app. Each answers a real event: a bar grows as a worker works, a
+   handoff line draws when a result is passed on, a summary section fades in as it arrives. */
+.bar-grow {
+  transition: width 400ms ease-out;
+}
+
+/* "backwards" holds the starting state (line hidden) while a staggered delay runs, but does not
+   freeze the end state, so the element's own opacity attribute still applies afterwards. */
+.handoff-draw {
+  stroke-dasharray: 1;
+  animation: draw-line 500ms ease-out backwards;
+}
+
+@keyframes draw-line {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.fade-in,
+.section-in {
+  animation: fade-in 240ms ease-out backwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Honor the reduced-motion setting: no animation or smooth transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

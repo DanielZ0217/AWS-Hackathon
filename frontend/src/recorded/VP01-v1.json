@@ -1,0 +1,395 @@
+{
+ "id": "VP01-v1",
+ "label": "Visit 1 of 3 (day 0)",
+ "description": "A critical finding is flagged, so care guidance pauses for a healthcare professional to review.",
+ "events": [
+  {
+   "schema_version": "backend-0",
+   "event_id": "run-recorded-vp01-v1-evt-001",
+   "run_id": "run-recorded-vp01-v1",
+   "sequence": 1,
+   "timestamp": "2026-10-23T19:31:49.331722+00:00",
+   "trace_id": "trace-run-recorded-vp01-v1",
+   "type": "run.started",
+   "summary": "Run started for virtual patient VP01, visit 1",
+   "visibility": "patient",
+   "node": null,
+   "task_id": null,
+   "need_ids": [],
+   "status": null,
+   "source_worker": null,
+   "destination_worker": null,
+   "artifact_ids": [],
+   "evidence_ids": [],
+   "payload": {
+    "preset_id": "VP01-v1",
+    "patient_id": "VP01",
+    "visit": 1,
+    "day": 0
+   }
+  },
+  {
+   "schema_version": "backend-0",
+   "event_id": "run-recorded-vp01-v1-evt-002",
+   "run_id": "run-recorded-vp01-v1",
+   "sequence": 2,
+   "timestamp": "2026-10-23T19:31:49.331765+00:00",
+   "trace_id": "trace-run-recorded-vp01-v1",
+   "type": "intake.started",
+   "summary": "Organizing the request",
+   "visibility": "demo_detail",
+   "node": null,
+   "task_id": null,
+   "need_ids": [],
+   "status": null,
+   "source_worker": null,
+   "destination_worker": null,
+   "artifact_ids": [],
+   "evidence_ids": [],
+   "payload": {}
+  },
+  {
+   "schema_version": "backend-0",
+   "event_id": "run-recorded-vp01-v1-evt-003",
+   "run_id": "run-recorded-vp01-v1",
+   "sequence": 3,
+   "timestamp": "2026-10-23T19:31:49.331791+00:00",
+   "trace_id": "trace-run-recorded-vp01-v1",
+   "type": "intake.decomposed",
+   "summary": "Organized request into 3 questions",
+   "visibility": "demo_detail",
+   "node": null,
+   "task_id": null,
+   "need_ids": [
+    "need-1",
+    "need-2",
+    "need-3"
+   ],
+   "status": null,
+   "source_worker": null,
+   "destination_worker": null,
+   "artifact_ids": [],
+   "evidence_ids": [],
+   "payload": {
+    "needs": [
+     {
+      "need_id": "need-1",
+      "question": "What does the chest X-ray show?"
+     },
+     {
+      "need_id": "need-2",
+      "question": "What does the heart tracing (ECG) show?"
+     },
+     {
+      "need_id": "need-3",
+      "question": "Explain the combined picture in plain language."
+     }
+    ]
+   }
+  },
+  {
+   "schema_version": "backend-0",
+   "event_id": "run-recorded-vp01-v1-evt-004",
+   "run_id": "run-recorded-vp01-v1",
+   "sequence": 4,
+   "timestamp": "2026-10-23T19:31:49.331816+00:00",
+   "trace_id": "trace-run-recorded-vp01-v1",
+   "type": "routing.assigned",
+   "summary": "What does the chest X-ray show? Assigned to Chest image.",
+   "visibility": "demo_detail",
+   "node": "radiology",
+   "task_id": "task-radiology",
+   "need_ids": [
+    "need-1"
+   ],
+   "status": null,
+   "source_worker": "orchestrator",
+   "destination_worker": "radiology",
+   "artifact_ids": [],
+   "evidence_ids": [],
+   "payload": {
+    "question": "What does the chest X-ray show?",
+    "reason": "The need concerns the supplied chest image data."
+   }
+  },
+  {
+   "schema_version": "backend-0",
+   "event_id": "run-recorded-vp01-v1-evt-005",
+   "run_id": "run-recorded-vp01-v1",
+   "sequence": 5,
+   "timestamp": "2026-10-23T19:31:49.331834+00:00",
+   "trace_id": "trace-run-recorded-vp01-v1",
+   "type": "routing.assigned",
+   "summary": "What does the heart tracing (ECG) show? Assigned to Heart rhythm.",
+   "visibility": "demo_detail",
+   "node": "ecg",
+   "task_id": "task-ecg",
+   "need_ids": [
+    "need-2"
+   ],
+   "status": null,
+   "source_worker": "orchestrator",
+   "destination_worker": "ecg",
+   "artifact_ids": [],
+   "evidence_ids": [],
+   "payload": {
+    "question": "What does the heart tracing (ECG) show?",
+    "reason": "The need concerns the supplied heart rhythm data."
+   }
+  },
+  {
+   "schema_version": "backend-0",
+   "event_id": "run-recorded-vp01-v1-evt-006",
+   "run_id": "run-recorded-vp01-v1",
+   "sequence": 6,
+   "timestamp": "2026-10-23T19:31:49.331849+00:00",
+   "trace_id": "trace-run-recorded-vp01-v1",
+   "type": "worker.started",
+   "summary": "Chest image: review started",
+   "visibility": "demo_detail",
+   "node": "radiology",
+   "task_id": "task-radiology",
+   "need_ids": [
+    "need-1"
+   ],
+   "status": "running",
+   "source_worker": "orchestrator",
+   "destination_worker": "radiology",
+   "artifact_ids": [],
+   "evidence_ids": [],
+   "payload": {}
+  },
+  {
+   "schema_version": "backend-0",
+   "event_id": "run-recorded-vp01-v1-evt-007",
+   "run_id": "run-recorded-vp01-v1",
+   "sequence": 7,
+   "timestamp": "2026-10-23T19:31:49.331862+00:00",
+   "trace_id": "trace-run-recorded-vp01-v1",
+   "type": "worker.started",
+   "summary": "Heart rhythm: review started",
+   "visibility": "demo_detail",
+   "node": "ecg",
+   "task_id": "task-ecg",
+   "need_ids": [
+    "need-2"
+   ],
+   "status": "running",
+   "source_worker": "orchestrator",
+   "destination_worker": "ecg",
+   "artifact_ids": [],
+   "evidence_ids": [],
+   "payload": {}
+  },
+  {
+   "schema_version": "backend-0",
+   "event_id": "run-recorded-vp01-v1-evt-008",
+   "run_id": "run-recorded-vp01-v1",
+   "sequence": 8,
+   "timestamp": "2026-10-23T19:31:57.818344+00:00",
+   "trace_id": "trace-run-recorded-vp01-v1",
+   "type": "worker.completed",
+   "summary": "Chest image: This chest X-ray of a 48-year-old woman may show an enlarged heart and signs of fluid in the lungs, which fits the reference labels of Cardiomegaly and Edema.",
+   "visibility": "demo_detail",
+   "node": "radiology",
+   "task_id": "task-radiology",
+   "need_ids": [
+    "need-1"
+   ],
+   "status": "succeeded",
+   "source_worker": "radiology",
+   "destination_worker": "doctor_synthesis",
+   "artifact_ids": [],
+   "evidence_ids": [
+    "ev-radiology-1"
+   ],
+   "payload": {
+    "limitations": [
+     "This is one front-view (AP) picture read by an AI model, not by a radiologist; a qualified radiologist must review any real clinical image.",
+     "No prior X-rays are available for comparison, so it is not possible to say whether findings are new or long-standing.",
+     "Clinical information such as symptoms, lab results, or history is not available here and would be needed for any real medical decision."
+    ],
+    "uncertainty": [
+     "AP portable X-rays can make the heart look bigger than it really is because of the angle the picture is taken from, so the heart size finding may not be fully reliable.",
+     "The hazy areas in the lungs could have more than one cause; fluid (edema) is one possibility but not the only one.",
+     "The reference labels were made by automated text-mining of a report and are sometimes wrong."
+    ],
+    "findings": [
+     {
+      "statement": "The heart shadow looks wider than usual relative to the chest width, which could suggest the heart is enlarged.",
+      "evidence": "The cardiac silhouette appears to occupy more than half the width of the chest on this AP portable view, consistent with the dataset label 'Cardiomegaly'."
+     },
+     {
+      "statement": "There are hazy, cloudy areas in both lungs, especially toward the lower and middle zones, which may point to fluid building up in the lung tissue.",
+      "evidence": "Increased whitish haziness and indistinct lung markings visible bilaterally, consistent with the dataset label 'Edema'."
+     },
+     {
+      "statement": "Several monitoring wires and what appears to be a pacemaker or implanted device are visible, suggesting the patient is being closely watched in a medical setting.",
+      "evidence": "Visible ECG leads, a device with leads in the right chest area, and 'PORTABLE' marker on the image."
+     }
+    ],
+    "red_flags": [
+     {
+      "flag_id": "flag-xray_edema",
+      "description": "The chest X-ray label shows fluid in the lungs (pulmonary edema)",
+      "supporting_observation_ids": [
+       "obs-radiology-xray_edema"
+      ],
+      "requires_human_review": true
+     }
+    ],
+    "model_call": {
+     "model": "us.anthropic.claude-sonnet-4-6",
+     "input_tokens": 1748,
+     "output_tokens": 445,
+     "duration_ms": 7694
+    }
+   }
+  },
+  {
+   "schema_version": "backend-0",
+   "event_id": "run-recorded-vp01-v1-evt-009",
+   "run_id": "run-recorded-vp01-v1",
+   "sequence": 9,
+   "timestamp": "2026-10-23T19:31:57.818464+00:00",
+   "trace_id": "trace-run-recorded-vp01-v1",
+   "type": "review.required",
+   "summary": "A critical finding needs review by a healthcare professional before any guidance is given",
+   "visibility": "patient",
+   "node": null,
+   "task_id": null,
+   "need_ids": [],
+   "status": null,
+   "source_worker": "orchestrator",
+   "destination_worker": null,
+   "artifact_ids": [],
+   "evidence_ids": [],
+   "payload": {
+    "flag_ids": [
+     "flag-xray_edema"
+    ],
+    "resumable": false
+   }
+  },
+  {
+   "schema_version": "backend-0",
+   "event_id": "run-recorded-vp01-v1-evt-010",
+   "run_id": "run-recorded-vp01-v1",
+   "sequence": 10,
+   "timestamp": "2026-10-23T19:31:58.121466+00:00",
+   "trace_id": "trace-run-recorded-vp01-v1",
+   "type": "worker.completed",
+   "summary": "Heart rhythm: The heart tracing shows a heart rate in the normal range, but the machine flagged several things that a doctor should look at.",
+   "visibility": "demo_detail",
+   "node": "ecg",
+   "task_id": "task-ecg",
+   "need_ids": [
+    "need-2"
+   ],
+   "status": "succeeded",
+   "source_worker": "ecg",
+   "destination_worker": "doctor_synthesis",
+   "artifact_ids": [],
+   "evidence_ids": [
+    "ev-ecg-1"
+   ],
+   "payload": {
+    "limitations": [
+     "The machine-generated report was NOT confirmed by a cardiologist; ECG machine reports are known to be over-cautious and can flag things that turn out to be normal.",
+     "Automatic beat counting on this trace was not reliable; the heart rate comes from the dataset value only.",
+     "Only 4 of the 12 ECG leads are shown in the picture, so a full assessment of the tracing is not possible here.",
+     "No clinical information about the person (age, symptoms, medical history) was provided, which is needed to put these findings in context."
+    ],
+    "uncertainty": [
+     "It is uncertain whether the rhythm changes (called 'sinus arrhythmia') are harmless normal variation or something more significant without a doctor reviewing the full tracing.",
+     "The QRS axis of 124 degrees points to 'right axis deviation', but what this means for this person's health is uncertain without clinical context.",
+     "The machine report mentions a possible old heart attack ('inferior infarct - age undetermined'), but it is not known if this is real or a false alarm \u2014 only a cardiologist can say."
+    ],
+    "findings": [
+     {
+      "statement": "The heart rate is 85 beats per minute, which is within the normal resting range of about 60\u2013100 beats per minute.",
+      "evidence": "heart_rate_bpm: 85.0"
+     },
+     {
+      "statement": "The electrical signal that spreads through the lower chambers of the heart takes longer than usual to travel \u2014 this is called a 'right bundle branch block', meaning one of the heart's electrical pathways may be delayed.",
+      "evidence": "qrs_ms: 140 (normal is under about 120 ms); machine report: 'Right bundle branch block'"
+     },
+     {
+      "statement": "The machine also flagged possible signs of reduced blood flow or injury in parts of the heart muscle, which could be important and needs a doctor to check.",
+      "evidence": "machine report: 'Inferior infarct - age undetermined | Lateral ST-T changes suggest myocardial injury/ischemia | Abnormal ECG'"
+     }
+    ],
+    "red_flags": [
+     {
+      "flag_id": "flag-ecg_report",
+      "description": "The ECG report mentions possible acute heart muscle injury",
+      "supporting_observation_ids": [
+       "obs-ecg-ecg_report"
+      ],
+      "requires_human_review": true
+     }
+    ],
+    "model_call": {
+     "model": "us.anthropic.claude-sonnet-4-6",
+     "input_tokens": 1447,
+     "output_tokens": 490,
+     "duration_ms": 7096
+    }
+   }
+  },
+  {
+   "schema_version": "backend-0",
+   "event_id": "run-recorded-vp01-v1-evt-011",
+   "run_id": "run-recorded-vp01-v1",
+   "sequence": 11,
+   "timestamp": "2026-10-23T19:31:58.121812+00:00",
+   "trace_id": "trace-run-recorded-vp01-v1",
+   "type": "doctor.review_completed",
+   "summary": "Doctor: human review required",
+   "visibility": "demo_detail",
+   "node": "doctor_synthesis",
+   "task_id": null,
+   "need_ids": [],
+   "status": null,
+   "source_worker": "doctor_synthesis",
+   "destination_worker": null,
+   "artifact_ids": [],
+   "evidence_ids": [],
+   "payload": {
+    "decision": "human_review",
+    "reason": "A red flag is unresolved. No guidance will be produced."
+   }
+  },
+  {
+   "schema_version": "backend-0",
+   "event_id": "run-recorded-vp01-v1-evt-012",
+   "run_id": "run-recorded-vp01-v1",
+   "sequence": 12,
+   "timestamp": "2026-10-23T19:31:58.121840+00:00",
+   "trace_id": "trace-run-recorded-vp01-v1",
+   "type": "run.paused",
+   "summary": "Paused for human review",
+   "visibility": "patient",
+   "node": null,
+   "task_id": null,
+   "need_ids": [],
+   "status": null,
+   "source_worker": null,
+   "destination_worker": null,
+   "artifact_ids": [],
+   "evidence_ids": [],
+   "payload": {
+    "outcome": "needs_human_review",
+    "resumable": false,
+    "flag_ids": [
+     "flag-xray_edema",
+     "flag-ecg_report"
+    ],
+    "limitations": [
+     "No guidance was produced because a critical finding needs review.",
+     "This virtual patient combines an ECG and a chest X-ray from two different real people. The ECG report was written by a machine and not confirmed by a cardiologist."
+    ]
+   }
+  }
+ ]
+}

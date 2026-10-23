@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "purpose": "Allowlisted source manifest for the planned ingestion harness; no downloads performed",
+  "purpose": "Allowlisted reference sources for the ingestion harness; acquisition and content/rights review required; no downloads performed",
   "default_follow_links": false,
   "sources": [
     {
@@ -138,6 +138,32 @@
       "retrieval_scopes": [
         "nutrition"
       ]
+    },
+    {
+      "source_id": "ref-heart-health-tests",
+      "url": "https://medlineplus.gov/hearthealthtests.html",
+      "title": "Heart health tests",
+      "specialty": "radiology",
+      "corpus_role": "reference_knowledge",
+      "format": "html",
+      "acquisition_status": "authored_summary_only_original_not_downloaded",
+      "ingest_scope": "Source-linked paraphrase covering CT, MRI, X-ray and echocardiography; no original article or media copied",
+      "rights_review": "Original-page reuse remains pending; only our paraphrase was ingested",
+      "checked_on": "2026-10-23",
+      "retrieval_scopes": ["radiology", "synthesis"]
+    },
+    {
+      "source_id": "ref-pulse-oximetry",
+      "url": "https://medlineplus.gov/lab-tests/pulse-oximetry/",
+      "title": "Pulse oximetry",
+      "specialty": "lab",
+      "corpus_role": "reference_knowledge",
+      "format": "html",
+      "acquisition_status": "authored_summary_only_original_not_downloaded",
+      "ingest_scope": "Source-linked paraphrase covering oxygen saturation and measurement context; no original article or media copied",
+      "rights_review": "Original-page reuse remains pending; only our paraphrase was ingested",
+      "checked_on": "2026-10-23",
+      "retrieval_scopes": ["lab", "synthesis"]
     },
     {
       "source_id": "ref-activity",

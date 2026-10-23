@@ -1,0 +1,13 @@
+# Local configuration and credentials; commit the example only.
+.env
+.env.*
+!.env.example
+.venv/
+.venv-win/
+.runtime/
+__pycache__/
+*.pyc
+.aws/
+ingestion/local/
+ingestion/work/
+presentation/.build/

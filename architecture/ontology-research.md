@@ -3,7 +3,7 @@
 **Researched:** 2026-10-23.  
 **Status:** Research and proposed integration plan. No ontology releases have been downloaded, mapped, imported into Neptune or connected to executable agents.
 
-**Architecture follow-up:** [Layer 00's extraction contract](00-ingestion-and-knowledge-preparation.md#llm-concept-and-relationship-extraction-into-neptune) adopts GPT-6 Sol as the preferred configurable extractor and Neptune Database as the managed graph target. Its structured candidates are mapped to selected terminology, checked against source spans and reviewed before publication. This research file's recommendations remain candidate ontology choices; the ingestion implementation is still pending.
+**Architecture follow-up:** [Layer 00's extraction contract](00-ingestion-and-knowledge-preparation.md#llm-concept-and-relationship-extraction-into-neptune) adopts GPT-6 Sol as the preferred configurable extractor and Neptune Database as the managed graph target. Its structured candidates are mapped to selected terminology, checked against source spans and reviewed before publication. The [ingestion harness](../ingestion/README.md) now implements configurable Bedrock extraction, structural/span checks, reviewed concept-key mappings and Neptune CSV export. These recommendations remain candidate ontology choices; automatic ontology parsing, code/release validation and formal reasoning are not implemented.
 
 ## Recommendation for this project
 

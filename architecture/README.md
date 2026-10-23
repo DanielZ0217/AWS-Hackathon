@@ -5,19 +5,21 @@
 ## Adopted architecture
 
 0. [Layer 00: ingestion and knowledge preparation](00-ingestion-and-knowledge-preparation.md) — exact starter sources, separate reference/patient/evaluation lanes, parsing/OCR, parent-child indexing, graph extraction, and publication checks. [Source manifest](00-ingestion-sources.json).
+
+   [Ingestion implementation](../ingestion/README.md): dataset destination map, acquisition/loading runbook, offline staging, configurable Bedrock graph extraction, Titan embeddings, reviewed OpenSearch/Neptune exports and offline tests. Cloud acquisition/loading/publication remain unverified.
 1. [Layer 1: patient intake and query planning](01-patient-intake-and-query-planning.md) — text/image intake, artifact classification, bounded decomposition, and evidence references.
 2. [Layer 2: routing and orchestration](02-planner-orchestrator-and-routing.md) — validated routing, parallel specialists, synthesis, review gates, and patient-facing assembly.
 3. [Layer 3: specialist analysis and evidence retrieval](03-specialist-analysis-and-evidence-retrieval.md) — hybrid parent-child retrieval, GraphRAG up to five hops, RRF fusion and reranking, one bounded recovery round, common evidence packages, and optional ontology checks.
 
 4. [Layer 4: Doctor synthesis and evidence review](04-doctor-synthesis-and-evidence-review.md) — claim support, contradictions, bounded recovery, nutrition/physio knowledge scopes, and guidance checks.
 
-These revised documents supersede the earlier Layer 1 and Layer 2 notes. Sonnet 4.6 is the initial configurable model for decomposition and routing; five workers are lab, radiology, ECG, nutrition, and physio, with a separate Doctor synthesis node.
+These revised documents supersede the earlier Layer 1 and Layer 2 notes. Sonnet 4.6 handles decomposition, routing and review; Amazon Nova Pro is the main model for the five specialist workers: lab, radiology, ECG, nutrition and physio. Doctor synthesis remains a separate Sonnet node.
 
 5. [Layer 5: generation, streaming, and tracing](05-generation-streaming-and-tracing.md) — live decomposition/routing/evaluation/recovery timeline, durable traces, scoped recovery strategies, and reviewed answer streaming.
 
 ## Reading the state schema
 
-Graph ingestion decision: [Layer 00](00-ingestion-and-knowledge-preparation.md#llm-concept-and-relationship-extraction-into-neptune) now specifies GPT-6 Sol as the preferred configurable concept/relationship extractor, terminology mapping, evidence/causal-claim review and controlled publication into Neptune Database. Sonnet is a configured extraction fallback; runtime specialist models remain as documented. Neptune Database is the selected managed graph target, with a local export adapter for labeled fallback. Account access and deployment remain unverified. Earlier PowerPoint/draw.io exports predate this model/backend revision.
+Graph ingestion decision: [Layer 00](00-ingestion-and-knowledge-preparation.md#llm-concept-and-relationship-extraction-into-neptune) now specifies GPT-6 Sol as the preferred configurable concept/relationship extractor, terminology mapping, evidence/causal-claim review and controlled publication into Neptune Database. Sonnet is a configured extraction fallback; runtime specialists use Amazon Nova Pro. Neptune Database is the selected managed graph target, with a local export adapter for labeled fallback. Earlier PowerPoint/draw.io exports predate this model/backend revision.
 
 Related research: [Existing medical ontologies and terminology resources](ontology-research.md) maps established resources to our agents, records source/licensing notes, and proposes a bounded integration and validation plan.
 
@@ -59,4 +61,4 @@ The harness should provide one callable workflow entry point, shared state, a wo
 
 One synthetic/public patient scenario accepts text and images, shows at least two real specialist handoffs, and produces one understandable explanation with evidence references and limitations. Missing evidence or worker failures are visible; flagged care guidance pauses for human review. The prototype boundary is visible.
 
-This folder specifies the architecture and build sequence. The executable harness has not yet been implemented.
+This folder specifies the architecture and build sequence. The patient-agent workflow harness has not yet been implemented. A separate [Layer 00 ingestion harness](../ingestion/README.md) now implements the documented subset of offline preparation and export stages.

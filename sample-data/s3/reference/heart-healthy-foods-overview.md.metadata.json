@@ -1,0 +1,1 @@
+{"metadataAttributes":{"corpus_role":{"value":{"type":"STRING","stringValue":"reference_knowledge"},"includeForEmbedding":false},"topics":{"value":{"type":"STRING","stringValue":"nutrition,synthesis"},"includeForEmbedding":false},"source_type":{"value":{"type":"STRING","stringValue":"authored_educational_summary"},"includeForEmbedding":false}}}
